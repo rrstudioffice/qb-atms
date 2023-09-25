@@ -52,36 +52,44 @@ if Config.UseTarget then
             distance = 1.5,
         })
     end)
-end
-
-RegisterNetEvent('qb-atms:client:loadATM', function(cards)
-    if cards and cards[1] then
+else
+    RegisterCommand('atm', function()
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed, true)
         for _, v in pairs(Config.ATMModels) do
             local hash = joaat(v)
             local atm = IsObjectNearPoint(hash, playerCoords.x, playerCoords.y, playerCoords.z, 1.5)
             if atm then
-                PlayATMAnimation('enter')
-                QBCore.Functions.Progressbar("accessing_atm", "Accessing ATM", 1500, false, true, {
-                    disableMovement = false,
-                    disableCarMovement = false,
-                    disableMouse = false,
-                    disableCombat = false,
-                }, {}, {}, {}, function() -- Done
-                    SetNuiFocus(true, true)
-                    SendNUIMessage({
-                        status = "openATMFrontScreen",
-                        cards = cards,
-                    })
-                end, function()
-                    QBCore.Functions.Notify("Failed!", "error")
-                end)
+                local hasVisa = exports['qb-inventory']:HasItem('visa', 1)
+                local hasMastercard = exports['qb-inventory']:HasItem('mastercard', 1)
+                if hasVisa or hasMastercard then
+                    TriggerServerEvent('qb-atms:server:enteratm')
+                else
+                    QBCore.Functions.Notify("Please visit a branch to order a card", "error")
+                end
             end
         end
-    else
-        QBCore.Functions.Notify("Please visit a branch to order a card", "error")
-    end
+    end, false)
+    RegisterKeyMapping('atm', 'Open ATM', 'keyboard', 'E')
+end
+
+RegisterNetEvent('qb-atms:client:loadATM', function(cards)
+    if not cards then return end
+    PlayATMAnimation('enter')
+    QBCore.Functions.Progressbar("accessing_atm", "Accessing ATM", 1500, false, true, {
+        disableMovement = false,
+        disableCarMovement = false,
+        disableMouse = false,
+        disableCombat = false,
+    }, {}, {}, {}, function() -- Done
+        SetNuiFocus(true, true)
+        SendNUIMessage({
+            status = "openATMFrontScreen",
+            cards = cards,
+        })
+    end, function()
+        QBCore.Functions.Notify("Failed!", "error")
+    end)
 end)
 
 -- Callbacks
