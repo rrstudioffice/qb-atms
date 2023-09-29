@@ -73,6 +73,25 @@ RegisterNetEvent('qb-atms:client:loadATM', function(cards)
     end)
 end)
 
+local function NearATM()
+    local playerCoords = GetEntityCoords(PlayerPedId())
+    for _, v in pairs(Config.ATMModels) do
+        local hash = joaat(v)
+        local atm = IsObjectNearPoint(hash, playerCoords.x, playerCoords.y, playerCoords.z, 1.5)
+        if atm then
+            return true
+        end
+    end
+end
+
+RegisterNetEvent('qb-atms:client:checkATM', function()
+    if NearATM() then
+        TriggerServerEvent('qb-atms:server:enteratm')
+    else
+        QBCore.Functions.Notify("You are not near an ATM", "error")
+    end
+end)
+
 -- Callbacks
 
 RegisterNUICallback("NUIFocusOff", function()
