@@ -52,25 +52,6 @@ if Config.UseTarget then
             distance = 1.5,
         })
     end)
-else
-    RegisterCommand('atm', function()
-        local playerPed = PlayerPedId()
-        local playerCoords = GetEntityCoords(playerPed, true)
-        for _, v in pairs(Config.ATMModels) do
-            local hash = joaat(v)
-            local atm = IsObjectNearPoint(hash, playerCoords.x, playerCoords.y, playerCoords.z, 1.5)
-            if atm then
-                local hasVisa = exports['qb-inventory']:HasItem('visa', 1)
-                local hasMastercard = exports['qb-inventory']:HasItem('mastercard', 1)
-                if hasVisa or hasMastercard then
-                    TriggerServerEvent('qb-atms:server:enteratm')
-                else
-                    QBCore.Functions.Notify("Please visit a branch to order a card", "error")
-                end
-            end
-        end
-    end, false)
-    RegisterKeyMapping('atm', 'Open ATM', 'keyboard', 'E')
 end
 
 RegisterNetEvent('qb-atms:client:loadATM', function(cards)

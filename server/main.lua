@@ -13,7 +13,7 @@ end)
 
 -- Event
 
-RegisterNetEvent('qb-atms:server:enteratm',function ()
+RegisterNetEvent('qb-atms:server:enteratm',function(source)
     local src = source
     local xPlayer = QBCore.Functions.GetPlayer(src)
     local visas = xPlayer.Functions.GetItemsByName('visa')
@@ -180,4 +180,20 @@ QBCore.Functions.CreateCallback('qb-atms:server:loadBankAccount', function(sourc
         banking['cash'] = xPlayer.Functions.GetMoney('cash')
     end
     cb(banking)
+end)
+
+-- Card Items
+
+QBCore.Functions.CreateUseableItem('visa', function(source, item)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if Player.Functions.GetItemByName(item.name) then
+        TriggerEvent('qb-atms:server:enteratm', source)
+    end
+end)
+
+QBCore.Functions.CreateUseableItem('mastercard', function(source, item)
+    local Player = QBCore.Functions.GetPlayer(source)
+    if Player.Functions.GetItemByName(item.name) then
+        TriggerEvent('qb-atms:server:enteratm', source)
+    end
 end)
